@@ -11,8 +11,10 @@
   </div>
 </section>
 
-<%= form_with url: pokemons_path, method: :get, class: "search-bar" do |f| %>
-  <%= text_field_tag :q, @query, placeholder: "Cari nama atau nomor… mis. pikachu / 25", autocomplete: "off" %>
+<%= form_with url: pokemons_path, method: :get, class: "search-bar", role: "search" do |f| %>
+  <%= search_field_tag :q, @query, placeholder: "Cari nama atau nomor… mis. pikachu / 25",
+      autocomplete: "off", autocapitalize: "off", spellcheck: false,
+      enterkeyhint: "search", aria: { label: "Cari Pokémon" } %>
   <%= hidden_field_tag :type, @type_filter %>
   <%= hidden_field_tag :sort, @sort %>
   <%= submit_tag "Cari", class: "btn" %>
