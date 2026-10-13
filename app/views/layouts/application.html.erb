@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <title><%= content_for(:title) || "Pokédex" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <header class="navbar">
+      <div class="nav-inner">
+        <%= link_to root_path, class: "brand" do %>
+          <span class="pokeball" aria-hidden="true"></span>
+          <span>Pokédex <small>Rails</small></span>
+        <% end %>
+        <nav class="nav-links">
+          <%= link_to "Semua", pokemons_path %>
+          <%= link_to "+ Tambah", new_pokemon_path, class: "btn btn-small" %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <% if notice.present? %>
+        <p class="flash flash-notice"><%= notice %></p>
+      <% end %>
+      <% if alert.present? %>
+        <p class="flash flash-alert"><%= alert %></p>
+      <% end %>
+      <%= yield %>
+    </main>
+
+    <footer class="footer">
+      <p>Pokédex Rails 8 &bull; Data: PokeAPI &bull; <%= Pokemon.count %> Pokémon tersimpan</p>
+    </footer>
+  </body>
+</html>

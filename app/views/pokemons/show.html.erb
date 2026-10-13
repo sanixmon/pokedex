@@ -1,0 +1,68 @@
+<% content_for :title, @pokemon.display_name %>
+
+<%= link_to "← Kembali", pokemons_path, class: "btn btn-ghost back-link" %>
+
+<article class="detail" style="--type-color: <%= type_color(@pokemon.primary_type) %>">
+  <div class="detail-left">
+    <span class="card-number big"><%= @pokemon.display_number %></span>
+    <h1><%= @pokemon.display_name %>
+      <% if @pokemon.is_legendary %><span class="legendary">★ Legendary</span><% end %>
+    </h1>
+    <div class="card-types">
+      <% @pokemon.types.each do |t| %><%= type_badge(t) %><% end %>
+      <span class="gen-badge">Gen <%= @pokemon.generation %></span>
+    </div>
+
+    <% if @pokemon.artwork_url.present? %>
+      <img src="<%= @pokemon.artwork_url %>" alt="<%= @pokemon.display_name %>" class="detail-img">
+    <% end %>
+
+    <% if @pokemon.description.present? %>
+      <p class="description"><%= @pokemon.description %></p>
+    <% end %>
+
+    <div class="info-grid">
+      <div><span>Tinggi</span><strong><%= @pokemon.height %> m</strong></div>
+      <div><span>Berat</span><strong><%= @pokemon.weight %> kg</strong></div>
+      <div><span>Base EXP</span><strong><%= @pokemon.base_experience %></strong></div>
+      <div><span>Total Stats</span><strong><%= @pokemon.total_stats %></strong></div>
+    </div>
+
+    <% if @pokemon.abilities_list.any? %>
+      <h3>Abilities</h3>
+      <div class="abilities">
+        <% @pokemon.abilities_list.each do |a| %>
+          <span class="ability"><%= a.capitalize %></span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="detail-right">
+    <h3>Base Stats</h3>
+    <% @pokemon.stat_list.each do |label, value| %>
+      <div class="stat-row">
+        <span class="stat-label"><%= label %></span>
+        <span class="stat-value"><%= value %></span>
+        <div class="stat-bar">
+          <div class="stat-fill" style="width: <%= [[value.to_i * 100 / 160, 100].min, 4].max %>%; background: <%= stat_bar_color(value) %>"></div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="detail-actions">
+      <%= link_to "Edit", edit_pokemon_path(@pokemon), class: "btn" %>
+      <%= button_to "Hapus", pokemon_path(@pokemon), method: :delete,
+          data: { turbo_confirm: "Hapus #{@pokemon.display_name}?" }, class: "btn btn-danger" %>
+    </div>
+
+    <div class="prev-next">
+      <% if @pokemon.prev_pokemon %>
+        <%= link_to "← #{@pokemon.prev_pokemon.display_number} #{@pokemon.prev_pokemon.display_name}", pokemon_path(@pokemon.prev_pokemon) %>
+      <% else %><span></span><% end %>
+      <% if @pokemon.next_pokemon %>
+        <%= link_to "#{@pokemon.next_pokemon.display_number} #{@pokemon.next_pokemon.display_name} →", pokemon_path(@pokemon.next_pokemon) %>
+      <% end %>
+    </div>
+  </div>
+</article>

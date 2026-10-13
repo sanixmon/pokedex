@@ -1,0 +1,78 @@
+<% if pokemon.errors.any? %>
+  <div class="form-errors">
+    <strong><%= pluralize(pokemon.errors.count, "error") %> — gagal simpan:</strong>
+    <ul>
+      <% pokemon.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: pokemon, class: "poke-form" do |f| %>
+  <div class="form-grid">
+    <div class="field">
+      <%= f.label :pokedex_number, "Nomor Pokédex" %>
+      <%= f.number_field :pokedex_number, min: 1, required: true %>
+    </div>
+    <div class="field">
+      <%= f.label :name, "Nama" %>
+      <%= f.text_field :name, required: true, placeholder: "pikachu" %>
+    </div>
+    <div class="field">
+      <%= f.label :primary_type, "Tipe Utama" %>
+      <%= f.select :primary_type, Pokemon::TYPES.map { |t| [ t.capitalize, t ] } %>
+    </div>
+    <div class="field">
+      <%= f.label :secondary_type, "Tipe Kedua (opsional)" %>
+      <%= f.select :secondary_type, [["—", ""]] + Pokemon::TYPES.map { |t| [ t.capitalize, t ] } %>
+    </div>
+    <div class="field">
+      <%= f.label :height, "Tinggi (m)" %>
+      <%= f.number_field :height, step: 0.1 %>
+    </div>
+    <div class="field">
+      <%= f.label :weight, "Berat (kg)" %>
+      <%= f.number_field :weight, step: 0.1 %>
+    </div>
+    <div class="field">
+      <%= f.label :abilities, "Abilities (koma)" %>
+      <%= f.text_field :abilities, placeholder: "static, lightning-rod" %>
+    </div>
+    <div class="field">
+      <%= f.label :base_experience, "Base EXP" %>
+      <%= f.number_field :base_experience %>
+    </div>
+    <% { hp: "HP", attack: "Attack", defense: "Defense", special_attack: "Sp. Atk", special_defense: "Sp. Def", speed: "Speed" }.each do |attr, label| %>
+      <div class="field">
+        <%= f.label attr, label %>
+        <%= f.number_field attr, min: 0 %>
+      </div>
+    <% end %>
+    <div class="field">
+      <%= f.label :generation, "Generasi" %>
+      <%= f.number_field :generation, min: 1, max: 9 %>
+    </div>
+    <div class="field checkbox">
+      <%= f.check_box :is_legendary %>
+      <%= f.label :is_legendary, "Legendary?" %>
+    </div>
+    <div class="field full">
+      <%= f.label :sprite_url, "Sprite URL" %>
+      <%= f.text_field :sprite_url %>
+    </div>
+    <div class="field full">
+      <%= f.label :artwork_url, "Artwork URL" %>
+      <%= f.text_field :artwork_url %>
+    </div>
+    <div class="field full">
+      <%= f.label :description, "Deskripsi" %>
+      <%= f.text_area :description, rows: 3 %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: "btn" %>
+    <%= link_to "Batal", pokemon.persisted? ? pokemon_path(pokemon) : pokemons_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

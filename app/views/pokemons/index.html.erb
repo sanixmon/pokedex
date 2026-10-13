@@ -1,0 +1,92 @@
+<% content_for :title, "Pokédex" %>
+
+<section class="hero">
+  <div>
+    <h1>Pokédex</h1>
+    <p>Cari, filter, dan kelola Pokémon. Klik kartu untuk detail stats.</p>
+  </div>
+  <div class="hero-count">
+    <strong><%= @total_count %></strong>
+    <span>Pokémon</span>
+  </div>
+</section>
+
+<%= form_with url: pokemons_path, method: :get, class: "search-bar" do |f| %>
+  <%= text_field_tag :q, @query, placeholder: "Cari nama atau nomor… mis. pikachu / 25", autocomplete: "off" %>
+  <%= hidden_field_tag :type, @type_filter %>
+  <%= hidden_field_tag :sort, @sort %>
+  <%= submit_tag "Cari", class: "btn" %>
+  <% if @query.present? || @type_filter.present? %>
+    <%= link_to "Reset", pokemons_path, class: "btn btn-ghost" %>
+  <% end %>
+<% end %>
+
+<div class="type-filters">
+  <%= link_to "Semua", pokemons_path(q: @query, sort: @sort),
+      class: "type-chip#{' active' if @type_filter.blank?}" %>
+  <% @all_types.each do |t| %>
+    <%= link_to t.capitalize, pokemons_path(q: @query, type: t, sort: @sort),
+        class: "type-chip#{' active' if @type_filter == t}",
+        style: (@type_filter == t ? "background-color: #{type_color(t)}; color: #fff; border-color: transparent;" : "") %>
+  <% end %>
+</div>
+
+<div class="toolbar">
+  <span><%= @total_count %> hasil</span>
+  <div class="sort-links">
+    <span>Urut:</span>
+    <%= link_to "No.", pokemons_path(q: @query, type: @type_filter), class: ("active" unless %w[name total].include?(@sort)) %>
+    <%= link_to "Nama", pokemons_path(q: @query, type: @type_filter, sort: "name"), class: ("active" if @sort == "name") %>
+    <%= link_to "Total Stats", pokemons_path(q: @query, type: @type_filter, sort: "total"), class: ("active" if @sort == "total") %>
+  </div>
+</div>
+
+<% if @pokemons.any? %>
+  <div class="grid">
+    <% @pokemons.each do |p| %>
+      <%= link_to pokemon_path(p), class: "card type-#{p.primary_type}" do %>
+        <div class="card-top">
+          <span class="card-number"><%= p.display_number %></span>
+          <% if p.is_legendary %><span class="legendary">★ Legendary</span><% end %>
+        </div>
+        <% if p.artwork_url.present? %>
+          <img src="<%= p.artwork_url %>" alt="<%= p.display_name %>" loading="lazy" class="card-img">
+        <% elsif p.sprite_url.present? %>
+          <img src="<%= p.sprite_url %>" alt="<%= p.display_name %>" loading="lazy" class="card-img pixel">
+        <% else %>
+          <div class="card-img placeholder">?</div>
+        <% end %>
+        <h3 class="card-name"><%= p.display_name %></h3>
+        <div class="card-types">
+          <% p.types.each do |t| %><%= type_badge(t) %><% end %>
+        </div>
+        <div class="card-stats-mini">
+          <span>⚔ <%= p.total_stats %></span>
+          <span>❤ <%= p.hp %></span>
+          <span>⚡ <%= p.speed %></span>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if @total_pages > 1 %>
+    <div class="pagination">
+      <% if @page > 1 %>
+        <%= link_to "← Prev", pokemons_path(q: @query, type: @type_filter, sort: @sort, page: @page - 1), class: "btn btn-ghost" %>
+      <% end %>
+      <span>Halaman <%= @page %> / <%= @total_pages %></span>
+      <% if @page < @total_pages %>
+        <%= link_to "Next →", pokemons_path(q: @query, type: @type_filter, sort: @sort, page: @page + 1), class: "btn btn-ghost" %>
+      <% end %>
+    </div>
+  <% end %>
+<% else %>
+  <div class="empty">
+    <p>Tidak ada Pokémon yang cocok.</p>
+    <p>Coba kata kunci lain, atau import dari PokeAPI:</p>
+    <%= form_with url: import_single_pokemons_path, method: :post, class: "import-form" do |f| %>
+      <%= text_field_tag :q, @query, placeholder: "nama / nomor, mis. mew" %>
+      <%= submit_tag "Import dari PokeAPI", class: "btn" %>
+    <% end %>
+  </div>
+<% end %>
